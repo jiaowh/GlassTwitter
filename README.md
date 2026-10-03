@@ -6,7 +6,7 @@
 
 A liquid-glass timeline for X, on Android and desktop.
 
-[Watch demos](#demos) · [Android setup](android/README.md)
+[Download APK](https://github.com/jiaowh/GlassTwitter/releases/download/v0.1.5/GlassX.apk) · [Watch demos](#demos)
 
 </div>
 
@@ -47,36 +47,14 @@ Ad filtering is based on visible disclosure labels and DOM markers. It cannot
 reliably identify undisclosed sponsorships or algorithmic boosts. Ordinary reposts
 are retained. Filtering is bundled with the Android app, not the desktop extension.
 
-## Android: build without Android Studio
+## Android
 
-Requirements: Windows PowerShell, an internet connection, and an Android 8+ device
-with an up-to-date Android System WebView. Java and SDK tools can be installed by
-the included setup script.
+**[Download APK](https://github.com/jiaowh/GlassTwitter/releases/download/v0.1.5/GlassX.apk)**
 
-From the repository root:
+Open the downloaded file on your Android phone and allow installation when prompted.
+Requires Android 8 or newer. This is an experimental debug build.
 
-```powershell
-cd android
-# Read Google's Android SDK licence before accepting:
-# https://developer.android.com/studio/terms
-.\setup-tools.ps1 -AcceptAndroidSdkLicense
-.\build.ps1
-```
-
-The build produces:
-
-```text
-android/app/build/outputs/apk/debug/app-debug.apk
-```
-
-Transfer the APK to your phone, open it in Files, and allow installation from
-that source when prompted. Alternatively, connect a phone with USB debugging
-and run `./install.ps1` from the `android` folder.
-
-These are debug builds for personal testing. An update must use the same signing
-key as the installed app. APKs and signing keys are excluded from this repository;
-no prebuilt download is assumed to be available. See [Android notes](android/README.md)
-for app behavior, maintenance and limitations.
+For developers: [build from source](android/README.md#build-on-windows).
 
 ## Desktop: load the extension
 
