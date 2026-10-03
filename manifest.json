@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Glass X \u2014 Liquid Timeline",
+  "version": "0.7.0",
+  "description": "A continuous, understated liquid-glass surface for the X home timeline.",
+  "minimum_chrome_version": "111",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

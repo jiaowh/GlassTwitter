@@ -1,0 +1,7 @@
+<resources>
+    <string name="refresh_feed">Refresh feed</string>
+    <string name="style_error">Glass styling could not load.</string>
+    <string name="ssl_error">Secure connection failed. Check your network and phone clock, then tap here to retry.</string>
+    <string name="http_error">X returned an error (%1$d). Tap here to retry.</string>
+    <string name="load_error">Page could not load. Tap here to retry.</string>
+</resources>

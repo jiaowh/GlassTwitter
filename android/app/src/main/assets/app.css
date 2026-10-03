@@ -1,0 +1,15 @@
+/* Android feed-only shell. Keep native tweet actions and modal controls intact. */
+html.glass-x-app #gx-navigation-toggle { display: none !important; }
+html.glass-x-app.glass-x-home main:has([data-testid="primaryColumn"]) {
+  padding-top: 0 !important;
+}
+/* X mobile bottom navigation and floating compose shortcut, only on Home. */
+html.glass-x-app.glass-x-home [data-testid="BottomBar"],
+html.glass-x-app.glass-x-home [data-testid="AppTabBar"],
+html.glass-x-app.glass-x-home [data-testid="FloatingActionButtons_Tweet_Button"],
+html.glass-x-app.glass-x-home a[data-testid="SideNav_NewTweet_Button"] {
+  display: none !important;
+}
+/* Native dock reserves its own space below the WebView. Header nodes remain
+   in the DOM so native feed-tab click handlers still work. */
+html.glass-x-app.glass-x-home [data-gx-home-hidden] { display: none !important; }

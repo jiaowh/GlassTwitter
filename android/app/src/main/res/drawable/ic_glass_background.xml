@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Opaque glass-inspired material; actual wallpaper blur is unavailable in launcher icons. -->
+    <path android:pathData="M0,0H108V108H0Z">
+        <aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="8" android:startY="0" android:endX="92" android:endY="108" android:startColor="#547C91" android:centerColor="#193447" android:endColor="#101C30"/></aapt:attr>
+    </path>
+    <path android:fillColor="#1EFFFFFF" android:pathData="M0,0H108V28Q48,9 0,76Z"/>
+    <path android:fillColor="#0B98DBFF" android:pathData="M0,87Q58,53 108,62V108H0Z"/>
+    <path android:fillColor="#00000000" android:strokeColor="#427DDDFF" android:strokeWidth="0.8" android:pathData="M9,76Q54,29 104,38"/>
+</vector>

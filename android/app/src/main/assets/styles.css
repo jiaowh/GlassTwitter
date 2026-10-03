@@ -1,0 +1,433 @@
+/* Glass X · art direction controls. All effects are gated to the home route. */
+:root {
+  --gx-glass-opacity: 0.20;
+  --gx-glass-hover-opacity: 0.24;
+  --gx-blur: 4px;
+  --gx-saturation: 100%;
+  --gx-border-alpha: 0.10;
+  --gx-highlight-alpha: 0.12;
+  --gx-radius: 32px;
+  --gx-media-radius: 20px;
+  --gx-gap: 0px;
+  --gx-overflow: 0px;
+  --gx-shadow-strength: 0.14;
+  --gx-hover-elevation: 1px;
+  --gx-transition: 190ms;
+  --gx-material-rgb: 24 29 35;
+  --gx-text: #e7e9ea;
+  --gx-muted: #969faa;
+  --gx-action: #edf6ff;
+  --gx-action-liked: #ff72b2;
+  --gx-action-reposted: #54edba;
+  --gx-media-bleed-opacity: 0.72;
+  --gx-media-bleed-blur: 1px;
+  --gx-media-bleed-saturation: 112%;
+  --gx-media-bleed-brightness: 1.03;
+  --gx-media-fill-y: 0px;
+  --gx-media-fill-feather: 24px;
+  --gx-join-fade: 64px;
+  --gx-post-padding: 18px;
+  --gx-avatar-size: 36px;
+  --gx-layout-gap: 12px;
+  --gx-timeline-width: 1000px;
+  --gx-surface-blur: 24px;
+}
+
+/* Keep native cell heights and positions: X uses them to decide which posts
+   stay mounted. Moving post contents away from those positions is unsafe. */
+/* Home-only focus layout. Native navigation is available through our toggle. */
+html.glass-x-home body {
+  background: radial-gradient(ellipse at 12% 15%, #263b47 0, transparent 48%),
+    radial-gradient(ellipse at 88% 65%, #302c42 0, transparent 50%), #080d14 !important;
+  background-attachment: fixed !important;
+}
+html.glass-x-home:not(.glass-x-navigation) :is(header[role="banner"], [data-testid="sidebarColumn"]) {
+  display: none !important;
+}
+html.glass-x-home:not(.glass-x-navigation) main:has([data-testid="primaryColumn"]) {
+  width: 100% !important;
+  max-width: none !important;
+  align-items: center !important;
+  flex: 1 1 auto !important;
+  padding-top: 58px;
+}
+html.glass-x-home:not(.glass-x-navigation) main div:has([data-testid="primaryColumn"]) {
+  width: 100% !important;
+  max-width: none !important;
+  background-color: transparent !important;
+}
+html.glass-x-home:not(.glass-x-navigation) [data-testid="primaryColumn"] {
+  width: min(var(--gx-timeline-width), calc(100% - 40px)) !important;
+  max-width: var(--gx-timeline-width) !important;
+  flex: 0 1 auto !important;
+  margin: 0 auto 32px !important;
+}
+#gx-navigation-toggle { display: none; }
+html.glass-x-home #gx-navigation-toggle {
+  display: block;
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 100;
+  border: 1px solid rgb(235 245 255 / 0.2);
+  border-radius: 24px;
+  padding: 9px 16px;
+  background: rgb(25 32 42 / 0.85);
+  color: #e7e9ea;
+  font: 13px system-ui, sans-serif;
+  backdrop-filter: blur(16px);
+  cursor: pointer;
+}
+html.glass-x-home #gx-navigation-toggle:focus-visible { outline: 2px solid #8ecfff; outline-offset: 3px; }
+
+/* 1. Shared glass environment. The page atmosphere shows through one continuous
+   translucent column; the focus-layout rules above control sidebar visibility. */
+html.glass-x-home [data-testid="primaryColumn"] {
+  background:
+    radial-gradient(ellipse at 4% 12%, rgb(85 111 132 / 0.12), transparent 58%),
+    radial-gradient(ellipse at 98% 65%, rgb(103 98 125 / 0.075), transparent 62%),
+    rgb(26 34 46 / 0.40) !important;
+  border: 1px solid rgb(215 233 255 / 0.16) !important;
+  border-radius: 32px;
+  backdrop-filter: blur(var(--gx-surface-blur)) saturate(120%);
+  box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.07),
+    inset -1px 0 0 rgb(180 210 255 / 0.04), 0 24px 90px rgb(0 0 0 / 0.24);
+  color: var(--gx-text);
+  isolation: isolate;
+}
+
+/* 2. Stable DOM adapter. X's virtualized list directly contains cellInnerDiv
+   wrappers. Strip list/cell fills, but never reset every descendant: controls,
+   polls, media, composer and menus retain their native styling and semantics.
+   Avoid overflow or sizing changes on the list: X owns its scroll geometry. */
+html.glass-x-home [data-testid="primaryColumn"]
+  :where(div:has(> [data-testid="cellInnerDiv"])) {
+  background-color: transparent !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"]
+  [data-testid="cellInnerDiv"]:has(article[data-testid="tweet"]) {
+  /* Inline virtualization positioning, if supplied by X, takes precedence. */
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+  border-block-color: transparent !important;
+}
+
+/* Some X releases put the separator/fill on a single wrapper inside the cell. */
+html.glass-x-home [data-testid="primaryColumn"]
+  [data-testid="cellInnerDiv"] > div:has(article[data-testid="tweet"]) {
+  background-color: transparent !important;
+  border-block-color: transparent !important;
+}
+
+/* 3. Post layout adapter. JS identifies the avatar/content branches using
+   stable test IDs and adds our own attributes. No elements are reparented.
+   Flatten only structural content divs: header shares a row with the avatar;
+   text, media, quotes and actions span BOTH columns. Native controls survive.
+   Unsupported DOM shapes have no attributes and keep their original layout. */
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="post"] {
+  padding: var(--gx-post-padding) !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="row"] {
+  display: grid !important;
+  grid-template-columns: var(--gx-avatar-size) minmax(0, 1fr);
+  column-gap: var(--gx-layout-gap);
+  row-gap: var(--gx-layout-gap);
+  align-items: start;
+  min-width: 0;
+}
+
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="contents"] {
+  display: contents !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="avatar"] {
+  grid-column: 1;
+  grid-row: 1;
+  width: var(--gx-avatar-size) !important;
+  min-width: 0 !important;
+  flex-basis: auto !important;
+  margin: 0 !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="avatar"]
+  :is([data-testid="Tweet-User-Avatar"], [data-testid^="UserAvatar-Container-"]) {
+  width: var(--gx-avatar-size) !important;
+  height: var(--gx-avatar-size) !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="header"] {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  min-width: 0;
+  min-height: var(--gx-avatar-size);
+  justify-content: space-between;
+  align-items: stretch;
+}
+/* X often wraps its horizontal identity/control row in a column flexbox.
+   Stretch that wrapper so names sit beside avatars instead of at its center. */
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="header"] > div:has([data-testid="User-Name"]) {
+  width: 100% !important;
+  align-self: stretch !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-layout="body"] {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin-inline: 0 !important;
+}
+
+/* Release X's width cap on single-photo wrappers; leave image sizing/cropping,
+   player controls and multi-photo grids to their existing native rules. */
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-expand-media] {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  align-self: stretch !important;
+}
+
+/* Single main photos use decoded intrinsic proportions, not X's cropped
+   landscape preview. Layout markers never apply to galleries, quotes or video.
+   Releasing the containing path is necessary for X's absolute photo layers. */
+html.glass-x-home [data-testid="primaryColumn"]
+  :is([data-gx-natural-media="path"], [data-gx-natural-media="frame"]) {
+  position: relative !important;
+  inset: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding-block: 0 !important;
+  aspect-ratio: auto !important;
+}
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-natural-media="frame"] {
+  aspect-ratio: var(--gx-natural-ratio) !important;
+  overflow: hidden !important;
+}
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-natural-media="spacer"] {
+  display: none !important;
+}
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-natural-media="image"] {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  opacity: 1 !important;
+}
+/* X can paint the same image as a background beneath its semantic img. */
+html.glass-x-home [data-testid="primaryColumn"] [data-gx-natural-media="frame"] div[style*="background-image"] {
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+@media (max-width: 600px) {
+  html.glass-x-home { --gx-post-padding: 12px; --gx-layout-gap: 10px; }
+  html.glass-x-home:not(.glass-x-navigation) [data-testid="primaryColumn"] {
+    width: calc(100% - 16px) !important;
+    border-radius: 24px;
+  }
+}
+
+/* 4. Liquid regions. The OUTER cell owns the material; article stays clear.
+   Decoration stays within its owning cell without altering measured height.
+   Negative z-index stays inside each isolated cell, behind its native content.
+   No closed stroke, detached drop shadow, margins, or horizontal overflow. */
+html.glass-x-home [data-testid="primaryColumn"]
+  [data-testid="cellInnerDiv"]:has(article[data-testid="tweet"])::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  clip-path: inset(0);
+  pointer-events: none;
+  /* The shared surface has no per-post rounded silhouette. Curvature is
+     reserved for media and quotes; masked reflections define the regions. */
+  border-radius: 0;
+  background:
+    radial-gradient(ellipse at 3% 16%, rgb(225 237 248 / var(--gx-highlight-alpha)), transparent 48%),
+    rgb(var(--gx-material-rgb) / var(--gx-glass-opacity));
+  backdrop-filter: blur(var(--gx-blur)) saturate(var(--gx-saturation));
+  -webkit-backdrop-filter: blur(var(--gx-blur)) saturate(var(--gx-saturation));
+  box-shadow:
+    inset 1px 0 0 rgb(225 237 248 / var(--gx-border-alpha)),
+    inset -1px 0 0 rgb(225 237 248 / calc(var(--gx-border-alpha) * 0.5));
+  /* Fade both joins: the continuous environment shows through instead of a
+     hard horizontal edge. Mask only the decorative layer, never tweet content. */
+  mask-image: linear-gradient(to bottom, transparent,
+    #000 min(var(--gx-join-fade), 40%),
+    #000 max(calc(100% - var(--gx-join-fade)), 60%), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent,
+    #000 min(var(--gx-join-fade), 40%),
+    #000 max(calc(100% - var(--gx-join-fade)), 60%), transparent);
+  transition: background-color var(--gx-transition) ease,
+    transform var(--gx-transition) ease, box-shadow var(--gx-transition) ease;
+}
+
+/* The media copy expands into the entire cell, beneath the glass and text
+   scrim. Only decoration changes; native cell heights and scroll stay intact. */
+html.glass-x-home [data-testid="primaryColumn"]
+  [data-testid="cellInnerDiv"]:has(article[data-testid="tweet"])::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  /* Keep reflections at the post width; never enlarge them to desktop width. */
+  top: 0;
+  bottom: 0;
+  /* Clip only this decorative layer, including its filter pixels.
+     Do not clip the cell: native menus and focus rings may overflow it. */
+  clip-path: inset(0);
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  background-image: var(--gx-media-image, none);
+  background-size: var(--gx-media-size, cover);
+  background-position: var(--gx-media-position, center);
+  background-repeat: no-repeat;
+  /* Brighten only the reflected copy; original media and text stay untouched. */
+  filter: blur(var(--gx-media-bleed-blur)) saturate(var(--gx-media-bleed-saturation))
+    brightness(var(--gx-media-bleed-brightness));
+  opacity: var(--gx-media-bleed-opacity);
+  /* Blend vertically into the next post. */
+  --gx-reflection-mask:
+    linear-gradient(to bottom, transparent, #000 var(--gx-media-fill-feather),
+      #000 calc(100% - var(--gx-media-fill-feather)), transparent);
+  /* Keep Chrome 111's prefixed mask composition fallback. */
+  -webkit-mask-image: var(--gx-reflection-mask);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--gx-reflection-mask);
+  mask-composite: intersect;
+}
+
+/* Readability scrim over media-backed posts: dark behind identity/text and
+   controls, clear around the image body. No extra layout or pointer surface. */
+html.glass-x-home [data-testid="primaryColumn"]
+  [data-testid="cellInnerDiv"][style*="--gx-media-image"]:has(article[data-testid="tweet"])::before {
+  background-image:
+    linear-gradient(to bottom,
+      rgb(8 13 20 / 0.88),
+      rgb(8 13 20 / 0.76) max(0px, calc(var(--gx-media-top, 80px) - 20px)),
+      transparent calc(var(--gx-media-top, 80px) + 24px),
+      transparent calc(var(--gx-media-top, 80px) + var(--gx-media-height, 0px) - 24px),
+      rgb(8 13 20 / 0.76) calc(var(--gx-media-top, 80px) + var(--gx-media-height, 0px) + 12px)),
+    radial-gradient(ellipse at 3% 16%, rgb(225 237 248 / var(--gx-highlight-alpha)), transparent 48%);
+}
+
+/* Vary just the faint reflection, without reintroducing a card outline. */
+html.glass-x-home [data-testid="primaryColumn"]
+  [data-testid="cellInnerDiv"]:has(article[data-testid="tweet"]):nth-child(even)::before {
+  background-position: 28px 0, 0 0;
+}
+
+/* Native tweet separators and hover fills must not obscure the shared glass.
+   Layout changes only through the validated adapter; retain native hit targets. */
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"] {
+  background: transparent !important;
+  border-block-color: transparent !important;
+  color: var(--gx-text);
+}
+
+/* Preserve X's inline link/status colors. This first material is designed for
+   X's Dim or Lights out appearance; no global theme or text reset is applied. */
+html.glass-x-home [data-testid="primaryColumn"]
+  :is([data-testid="tweetText"], [data-testid="User-Name"]) {
+  color: var(--gx-text) !important;
+}
+
+html.glass-x-home [data-testid="primaryColumn"]
+  :is([data-testid="socialContext"], article[data-testid="tweet"] [role="group"]) {
+  color: var(--gx-muted);
+}
+
+/* Action test IDs survive X's generated class changes. Color the nested icon
+   and count wrappers too: X sets muted colors directly on those descendants.
+   The dark outline keeps light icons legible over bright image reflections. */
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  :is([data-testid="reply"], [data-testid="like"], [data-testid="unlike"],
+      [data-testid="retweet"], [data-testid="unretweet"],
+      [data-testid="bookmark"], [data-testid="removeBookmark"], a[href$="/analytics"]) {
+  --gx-action-current: var(--gx-action);
+  color: var(--gx-action-current) !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.95), 0 0 4px rgb(0 0 0 / 0.75);
+}
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  [data-testid="unlike"] { --gx-action-current: var(--gx-action-liked) !important; }
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  [data-testid="unretweet"] { --gx-action-current: var(--gx-action-reposted) !important; }
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  [data-testid="removeBookmark"] { --gx-action-current: #78caff !important; }
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  :is([data-testid="reply"], [data-testid="like"], [data-testid="unlike"],
+      [data-testid="retweet"], [data-testid="unretweet"],
+      [data-testid="bookmark"], [data-testid="removeBookmark"], a[href$="/analytics"])
+  :where(div, span, svg) { color: var(--gx-action-current) !important; }
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  :is([data-testid="reply"], [data-testid="like"], [data-testid="unlike"],
+      [data-testid="retweet"], [data-testid="unretweet"],
+      [data-testid="bookmark"], [data-testid="removeBookmark"], a[href$="/analytics"]) svg {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.95));
+}
+
+/* 4. Hover lifts only the material. Text and hit targets never move or scale.
+   Focus remains native; keyboard use does not trigger a giant card treatment. */
+@media (hover: hover) and (pointer: fine) {
+  html.glass-x-home [data-testid="primaryColumn"]
+    [data-testid="cellInnerDiv"]:has(article[data-testid="tweet"]):hover::before {
+    background-color: rgb(var(--gx-material-rgb) / var(--gx-glass-hover-opacity));
+    transform: none;
+    box-shadow:
+      inset 1px 0 0 rgb(225 237 248 / calc(var(--gx-border-alpha) * 1.6)),
+      inset -1px 0 0 rgb(225 237 248 / var(--gx-border-alpha)),
+      inset 0 -12px 24px -20px rgb(0 0 0 / var(--gx-shadow-strength));
+  }
+}
+
+/* 5. Embedded media: style the frame, never filter the image/video itself.
+   Do not set overflow:hidden on video wrappers (player menus must stay usable).
+   X's own media clipping handles multi-image grids and player controls. */
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  :is([data-testid="tweetPhoto"], [data-testid="videoPlayer"]) {
+  border-radius: var(--gx-media-radius) !important;
+  box-shadow: 0 2px 12px rgb(0 0 0 / var(--gx-shadow-strength)),
+    0 0 0 1px rgb(235 244 255 / var(--gx-border-alpha));
+}
+
+/* Quote adapter: X commonly exposes quote previews as a focusable link div.
+   Require User-Name to avoid treating unrelated link controls as quote boxes.
+   This excludes the article's own identity link and ordinary media wrappers. */
+html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"]
+  div[role="link"][tabindex="0"]:has([data-testid="User-Name"]) {
+  background-color: rgb(180 198 219 / 0.025) !important;
+  border-color: rgb(225 237 248 / var(--gx-border-alpha)) !important;
+  border-radius: calc(var(--gx-radius) * 0.55) !important;
+}
+
+/* 6. Accessibility and fallbacks. No perpetual animation or will-change layers. */
+@media (prefers-reduced-motion: reduce) {
+  html.glass-x-home { --gx-hover-elevation: 0px; --gx-transition: 0ms; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html.glass-x-home { --gx-glass-opacity: 0.96; --gx-glass-hover-opacity: 0.98; --gx-blur: 0px; --gx-surface-blur: 0px; --gx-media-bleed-opacity: 0; }
+  html.glass-x-home [data-testid="primaryColumn"] { background-color: #111820 !important; }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  html.glass-x-home { --gx-glass-opacity: 0.92; --gx-glass-hover-opacity: 0.96; }
+}
+
+@media (forced-colors: active) {
+  html.glass-x-home { --gx-media-bleed-opacity: 0; }
+  html.glass-x-home body { background: Canvas !important; }
+  html.glass-x-home [data-testid="primaryColumn"] { background: Canvas !important; color: CanvasText; }
+  html.glass-x-home [data-testid="primaryColumn"]
+    [data-testid="cellInnerDiv"]:has(article[data-testid="tweet"])::before { display: none; }
+  html.glass-x-home [data-testid="primaryColumn"] article[data-testid="tweet"] {
+    border-block-end: 1px solid CanvasText !important;
+  }
+}
+
