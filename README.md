@@ -6,7 +6,7 @@
 
 A liquid-glass timeline for X, on Android and desktop.
 
-[Watch demo 1](docs/media/demo-1.mp4) · [Watch demo 2](docs/media/demo-2.mp4) · [Android setup](android/README.md)
+[Watch demos](#demos) · [Android setup](android/README.md)
 
 </div>
 
@@ -19,16 +19,18 @@ The Android app wraps X’s website in a WebView; it is not a standalone X API c
 
 ## Demos
 
-Two phone recordings are included in the repository:
+### Demo 1
 
-| Recording | Video |
-| --- | --- |
-| Demo 1 | [Watch / download MP4](docs/media/demo-1.mp4) |
-| Demo 2 | [Watch / download MP4](docs/media/demo-2.mp4) |
+https://github.com/user-attachments/assets/38c6580c-b773-4a02-bfb0-01553ea4f2a5
 
-These links open the repository’s video files. If GitHub does not show a player,
-use its download/raw option. The recordings show the app at the time they were
-captured; later builds may look slightly different.
+### Demo 2
+
+https://github.com/user-attachments/assets/cda582f6-b204-44f1-ba5e-05edc7ca26a4
+
+[Download demo 1](docs/media/demo-1.mp4) · [Download demo 2](docs/media/demo-2.mp4)
+
+The recordings show the app at the time they were captured; later builds may
+look slightly different.
 
 ## Features
 
